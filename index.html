@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ujjawal | Frontend Web Developer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            void: '#030304',
+            carbon: '#0A0A0D',
+            armor: '#121217',
+            batgold: '#EAB308',
+            batgoldHover: '#FACC15',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #030304;
+      color: #F4F4F5;
+      overflow-x: hidden;
+    }
+
+    /* Subtle Stealth Tactical Grid */
+    .stealth-grid {
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    /* Floating Animations */
+    .float { animation: floaty 5s ease-in-out infinite; }
+    .float2 { animation: floaty 6s ease-in-out infinite 0.8s; }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Cursor Spotlight + Tactical Card */
+    .tactical-card {
+      position: relative;
+      background: #0A0A0D;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.35s var(--ease), border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .tactical-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        360px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(234, 179, 8, 0.10),
+        transparent 45%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .tactical-card:hover::before { opacity: 1; }
+    .tactical-card:hover {
+      border-color: rgba(234, 179, 8, 0.38);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    }
+
+    /* HUD Corner Brackets on Hover */
+    .hud-corners span {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-color: #EAB308;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    .tactical-card:hover .hud-corners span { opacity: 0.9; }
+    .hud-tl { top: -1px; left: -1px; border-top: 1.5px solid; border-left: 1.5px solid; }
+    .hud-tr { top: -1px; right: -1px; border-top: 1.5px solid; border-right: 1.5px solid; }
+    .hud-bl { bottom: -1px; left: -1px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+    .hud-br { bottom: -1px; right: -1px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+    /* Tactile Click Ripple */
+    .ripple-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(0);
+      animation: rippleAnim 0.6s var(--ease);
+      pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Interactive Skill Tags */
+    .tag {
+      transition: transform 0.25s var(--ease), box-shadow 0.25s ease, border-color 0.25s ease;
+      cursor: pointer;
+    }
+    .tag:hover {
+      transform: scale(1.08) rotate(0deg) !important;
+      box-shadow: 0 0 25px rgba(234, 179, 8, 0.25);
+    }
+    .tag:active {
+      transform: scale(0.95) !important;
+    }
+
+    /* 3D Tilt Emblem */
+    .tilt-box {
+      perspective: 900px;
+    }
+    .tilt-inner {
+      transition: transform 0.2s var(--ease);
+      transform-style: preserve-3d;
+    }
+
+    /* Modal Smooth Transition */
+    .modal-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s var(--ease);
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      transform: scale(0.94) translateY(14px);
+      transition: transform 0.35s var(--ease);
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #030304; }
+    ::-webkit-scrollbar-thumb { background: #27272A; border-radius: 99px; }
+  </style>
+</head>
+<body class="text-zinc-100 antialiased selection:bg-batgold selection:text-black">
+
+  <!-- Floating Bottom Nav Pill (With Live Active Section Highlight & Smooth Scroll) -->
+  <nav class="navpill fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-carbon/90 backdrop-blur-xl border border-white/15 text-zinc-400 rounded-full px-5 sm:px-6 py-3 flex gap-4 sm:gap-6 text-xs sm:text-sm font-medium shadow-[0_15px_40px_rgba(0,0,0,0.9)]">
+    <a href="#about" data-nav="about" class="nav-item hover:text-batgold transition">About</a>
+    <a href="#work" data-nav="work" class="nav-item hover:text-batgold transition">Work</a>
+    <a href="#skills" data-nav="skills" class="nav-item hover:text-batgold transition">Skills</a>
+    <a href="#reviews" data-nav="reviews" class="nav-item hover:text-batgold transition">Reviews</a>
+    <a href="#contact" data-nav="contact" class="nav-item hover:text-batgold transition">Contact</a>
+  </nav>
+
+  <!-- TOP HEADER -->
+  <header class="absolute top-0 left-0 right-0 z-20 max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+    <a href="#" class="group flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-carbon border border-white/15 group-hover:border-batgold/60 flex items-center justify-center transition">
+        <!-- Geometric Bat-Wing Emblem -->
+        <svg class="w-4 h-4 text-batgold transition-transform duration-300 group-hover:scale-110" viewBox="0 0 32 16" fill="currentColor">
+          <path d="M16 14L12.5 8.5L9 11L5.5 6.5L0 9.5C1.5 4.5 5.5 1.5 10.5 1.5L13 5L14.5 2L16 4L17.5 2L19 5L21.5 1.5C26.5 1.5 30.5 4.5 32 9.5L26.5 6.5L23 11L19.5 8.5L16 14Z"/>
+        </svg>
+      </div>
+      <span class="font-extrabold tracking-tight text-white">ujjawal<span class="text-batgold">.dev</span></span>
+    </a>
+    <a href="#contact" class="ripple-btn bg-batgold hover:bg-batgoldHover text-black text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition shadow-lg shadow-batgold/15">
+      Hire Me +
+    </a>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="hero" class="relative bg-void text-white stealth-grid min-h-[92vh] flex items-center px-6 pt-24 pb-20 overflow-hidden border-b border-white/[0.06]">
+    <!-- Dynamic Cursor Bat-Signal Glow -->
+    <div id="heroSpotlight" class="pointer-events-none absolute inset-0 transition-opacity duration-300" style="background: radial-gradient(600px circle at 50% 45%, rgba(234, 179, 8, 0.08), transparent 60%);"></div>
+
+    <div class="max-w-6xl mx-auto w-full relative z-10 text-center">
+      <!-- Floating Tactical Badges -->
+      <div class="hidden sm:inline-flex items-center gap-2 absolute -top-8 left-8 float bg-carbon/90 border border-white/10 rounded-full px-3.5 py-1.5 text-xs font-mono text-zinc-300 backdrop-blur">
+        <span class="w-2 h-2 rounded-full bg-batgold animate-pulse"></span>
+        <span>Available for freelance</span>
+      </div>
+      <div class="hidden sm:block absolute -bottom-4 right-8 float2 bg-carbon/90 border border-white/10 rounded-full px-3.5 py-1.5 text-xs font-mono text-zinc-400 backdrop-blur">
+        &lt;code <span class="text-batgold">clean="true"</span> /&gt;
+      </div>
+
+      <!-- Subtle Stealth Orbit Rings -->
+      <div class="w-64 h-64 sm:w-96 sm:h-96 rounded-full border border-batgold/10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div class="w-[420px] h-[420px] sm:w-[580px] sm:h-[580px] rounded-full border border-white/[0.03] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+
+      <div class="inline-flex sm:hidden items-center gap-2 px-3 py-1 rounded-full bg-carbon border border-white/10 text-[11px] font-mono text-zinc-300 mb-5">
+        <span class="w-1.5 h-1.5 rounded-full bg-batgold animate-pulse"></span>
+        <span>Available for freelance</span>
+      </div>
+
+      <h1 class="relative text-4xl sm:text-6xl lg:text-[66px] font-extrabold leading-[1.08] tracking-tight">
+        Unlock the future<br/>
+        of <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-batgold">your website</span>
+      </h1>
+
+      <p class="relative mt-6 text-zinc-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+        Hi, I'm <span class="text-white font-semibold">Ujjawal</span>. A frontend developer building fast, dark-aesthetic, responsive websites with HTML5, CSS3 &amp; JavaScript.
+      </p>
+
+      <div class="relative mt-9 flex flex-wrap items-center justify-center gap-4">
+        <a href="#work" class="ripple-btn bg-batgold hover:bg-batgoldHover text-black font-bold px-7 py-3.5 rounded-xl text-sm transition shadow-lg shadow-batgold/15 flex items-center gap-2">
+          <span>View Work</span>
+          <i class="ri-arrow-down-line"></i>
+        </a>
+        <a href="#contact" class="ripple-btn bg-carbon border border-white/15 hover:border-batgold/50 text-white px-7 py-3.5 rounded-xl text-sm font-medium transition">
+          Let's Talk
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / STATS -->
+  <section id="about" class="bg-carbon px-6 py-24 border-b border-white/[0.06]">
+    <div class="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-7 reveal">
+        <span class="font-mono text-xs uppercase tracking-widest text-batgold">Philosophy</span>
+        <h2 class="text-3xl sm:text-4xl font-bold leading-snug mt-2 text-white">
+          <span class="text-zinc-500">I believe</span> great frontend work can
+          <span class="text-zinc-500">reshape how people experience</span> a brand online.
+        </h2>
+
+        <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10">
+          <div class="tactical-card rounded-2xl aspect-square flex flex-col items-center justify-center text-center p-3">
+            <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+            <p class="text-2xl sm:text-3xl font-extrabold text-batgold stat-num" data-target="2" data-suffix="+">2+</p>
+            <p class="text-[11px] font-mono text-zinc-400 mt-1">years coding</p>
+          </div>
+          <div class="tactical-card rounded-2xl aspect-square flex flex-col items-center justify-center text-center p-3">
+            <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+            <p class="text-2xl sm:text-3xl font-extrabold text-white stat-num" data-target="15" data-suffix="+">15+</p>
+            <p class="text-[11px] font-mono text-zinc-400 mt-1">projects shipped</p>
+          </div>
+          <div class="tactical-card rounded-2xl aspect-square flex flex-col items-center justify-center text-center p-3">
+            <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+            <p class="text-2xl sm:text-3xl font-extrabold text-batgold stat-num" data-target="100" data-suffix="%">100%</p>
+            <p class="text-[11px] font-mono text-zinc-400 mt-1">responsive builds</p>
+          </div>
+          <div class="tactical-card rounded-2xl aspect-square flex flex-col items-center justify-center text-center p-3">
+            <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+            <p class="text-2xl sm:text-3xl font-extrabold text-white stat-num" data-target="10" data-suffix="+">10+</p>
+            <p class="text-[11px] font-mono text-zinc-400 mt-1">tech mastered</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Interactive Stealth Core Card -->
+      <div class="lg:col-span-5 flex justify-center reveal tilt-box">
+        <div id="emblemCard" class="tilt-inner w-64 h-64 sm:w-72 sm:h-72 rounded-3xl bg-gradient-to-br from-armor via-void to-carbon border border-white/10 hover:border-batgold/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col items-center justify-center p-6 relative overflow-hidden cursor-pointer">
+          <div class="w-40 h-40 rounded-full bg-batgold/10 blur-2xl absolute"></div>
+          <svg class="w-24 h-12 text-batgold relative z-10 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]" viewBox="0 0 32 16" fill="currentColor">
+            <path d="M16 14L12.5 8.5L9 11L5.5 6.5L0 9.5C1.5 4.5 5.5 1.5 10.5 1.5L13 5L14.5 2L16 4L17.5 2L19 5L21.5 1.5C26.5 1.5 30.5 4.5 32 9.5L26.5 6.5L23 11L19.5 8.5L16 14Z"/>
+          </svg>
+          <p class="mt-5 font-mono text-xs text-zinc-300 tracking-widest relative z-10">STEALTH.UI // v2.6</p>
+          <p class="mt-1 font-mono text-[10px] text-zinc-500 relative z-10">Hover to tilt</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE BUILD PROCESS & WORK -->
+  <section id="work" class="bg-void px-6 py-24 border-b border-white/[0.06]">
+    <div class="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+      <!-- Left Interactive Browser Window -->
+      <div class="lg:col-span-6 reveal">
+        <span class="font-mono text-xs uppercase tracking-widest text-batgold">Workflow</span>
+        <h2 class="text-3xl sm:text-4xl font-bold mt-1 mb-8 text-white">Exploring my build process</h2>
+
+        <div class="rounded-2xl bg-carbon border border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.9)] p-5 sm:p-6 transition-all duration-500">
+          <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/[0.07]">
+            <div class="flex gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-batgold"></span>
+            </div>
+            <span id="previewBadge" class="font-mono text-[11px] text-batgold">01 / LAYOUT ENGINE</span>
+          </div>
+
+          <!-- Dynamic Preview Content -->
+          <div id="processPreview" class="min-h-[155px] flex flex-col justify-center transition-all duration-300">
+            <div class="h-3 w-2/3 bg-white/15 rounded-full mb-3"></div>
+            <div class="h-3 w-1/2 bg-batgold rounded-full mb-5"></div>
+            <div class="grid grid-cols-3 gap-2.5">
+              <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+                <span class="w-4 h-1 bg-batgold rounded"></span>
+                <span class="text-[10px] font-mono text-zinc-400">Grid</span>
+              </div>
+              <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+                <span class="w-4 h-1 bg-zinc-400 rounded"></span>
+                <span class="text-[10px] font-mono text-zinc-400">Flex</span>
+              </div>
+              <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+                <span class="w-4 h-1 bg-batgold rounded"></span>
+                <span class="text-[10px] font-mono text-zinc-400">Mobile</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Clickable Process Steps -->
+      <div class="lg:col-span-6 space-y-4 reveal">
+        <p class="text-xs font-mono text-zinc-500 mb-2">CLICK A STEP TO INSPECT PREVIEW</p>
+
+        <div data-step="0" class="process-step p-5 rounded-2xl bg-carbon border border-batgold/50 cursor-pointer transition-all duration-300">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Pixel-perfect landing pages.</h3>
+            <span class="font-mono text-xs text-batgold">01</span>
+          </div>
+          <p class="text-zinc-400 mt-1.5 text-sm">Custom, responsive layouts built from scratch to match any brand aesthetic.</p>
+        </div>
+
+        <div data-step="1" class="process-step p-5 rounded-2xl bg-carbon/40 border border-white/[0.06] opacity-60 hover:opacity-100 cursor-pointer transition-all duration-300">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Clean, maintainable code.</h3>
+            <span class="font-mono text-xs text-zinc-500">02</span>
+          </div>
+          <p class="text-zinc-400 mt-1.5 text-sm">Semantic HTML5 and organised CSS/JS that loads fast and is easy to scale.</p>
+        </div>
+
+        <div data-step="2" class="process-step p-5 rounded-2xl bg-carbon/40 border border-white/[0.06] opacity-60 hover:opacity-100 cursor-pointer transition-all duration-300">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Fast load, smooth motion.</h3>
+            <span class="font-mono text-xs text-zinc-500">03</span>
+          </div>
+          <p class="text-zinc-400 mt-1.5 text-sm">GPU-accelerated transitions and tactile micro-interactions without heavy bloat.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Featured Project Cards -->
+    <div class="max-w-6xl mx-auto mt-20">
+      <div class="flex items-center justify-between mb-8 reveal">
+        <h3 class="text-2xl font-bold text-white">Featured Projects</h3>
+        <span class="text-xs font-mono text-zinc-500">Click card to inspect</span>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 reveal">
+        <div
+          class="project-card tactical-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between"
+          data-title="Obsidian Stealth Landing Page"
+          data-tag="01 / LANDING PAGE"
+          data-stack="HTML5, Tailwind CSS, Vanilla JavaScript"
+          data-desc="A pitch-black product showcase featuring cursor-aware spotlight cards, tactile click ripples, smooth scroll reveals, and mobile-first navigation."
+        >
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div>
+            <span class="text-[11px] font-mono text-batgold">01 / LANDING PAGE</span>
+            <h3 class="font-bold text-lg text-white mt-2">Obsidian Stealth Landing Page</h3>
+            <p class="text-sm text-zinc-400 mt-2 leading-relaxed">Dark product showcase with cursor-aware cards and scroll reveals.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-500">
+            <span>HTML &bull; CSS &bull; JS</span>
+            <span class="text-batgold">Inspect &rarr;</span>
+          </div>
+        </div>
+
+        <div
+          class="project-card tactical-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between"
+          data-title="Ironclad Fitness Studio Site"
+          data-tag="02 / BUSINESS SITE"
+          data-stack="HTML5, CSS3 Grid, Bootstrap 5, Web3Forms"
+          data-desc="A high-contrast responsive website for a strength studio with class schedules, trainer cards, and a working email booking form."
+        >
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div>
+            <span class="text-[11px] font-mono text-batgold">02 / BUSINESS SITE</span>
+            <h3 class="font-bold text-lg text-white mt-2">Ironclad Fitness Studio Site</h3>
+            <p class="text-sm text-zinc-400 mt-2 leading-relaxed">High-contrast responsive site with booking form and schedules.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-500">
+            <span>HTML5 &bull; Grid &bull; JS</span>
+            <span class="text-batgold">Inspect &rarr;</span>
+          </div>
+        </div>
+
+        <div
+          class="project-card tactical-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between"
+          data-title="Monochrome Creator Portfolio"
+          data-tag="03 / PORTFOLIO"
+          data-stack="HTML5, Modern CSS, Vanilla JS"
+          data-desc="A lightweight personal showcase designed for creators with smooth modal previews, tactile hover states, and zero external bloat."
+        >
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div>
+            <span class="text-[11px] font-mono text-batgold">03 / PORTFOLIO</span>
+            <h3 class="font-bold text-lg text-white mt-2">Monochrome Creator Portfolio</h3>
+            <p class="text-sm text-zinc-400 mt-2 leading-relaxed">Lightweight personal site with modal galleries and crisp alignment.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-500">
+            <span>HTML &bull; CSS &bull; JS</span>
+            <span class="text-batgold">Inspect &rarr;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS CLOUD (Tactile & Interactive) -->
+  <section id="skills" class="bg-carbon px-6 py-28 relative overflow-hidden border-b border-white/[0.06]">
+    <div class="max-w-4xl mx-auto text-center relative z-10 reveal">
+      <span class="font-mono text-xs uppercase tracking-widest text-batgold">Arsenal</span>
+      <h2 class="text-3xl sm:text-4xl font-bold text-white italic mt-2 mb-4">Skills that elevate my build quality</h2>
+      <p id="skillReadout" class="font-mono text-xs text-zinc-400 mb-12 h-5">Click any skill pill to inspect capability</p>
+
+      <div class="flex flex-wrap justify-center gap-3.5 sm:gap-4">
+        <span data-info="Semantic, accessible & SEO-structured markup" class="tag bg-zinc-100 text-black px-5 py-2.5 rounded-full text-sm font-bold -rotate-3">HTML5</span>
+        <span data-info="Modern Flexbox, CSS Grid & custom keyframe motion" class="tag bg-armor border border-white/15 text-white px-5 py-2.5 rounded-full text-sm font-bold rotate-2">CSS3 / Grid</span>
+        <span data-info="Interactive DOM manipulation, events & smooth UI logic" class="tag bg-batgold text-black px-5 py-2.5 rounded-full text-sm font-bold -rotate-2">JavaScript</span>
+        <span data-info="Rapid utility-first styling with custom dark themes" class="tag bg-zinc-100 text-black px-5 py-2.5 rounded-full text-sm font-bold rotate-3">Tailwind CSS</span>
+        <span data-info="Tested across mobile, tablet & ultrawide screens" class="tag bg-armor border border-batgold/40 text-batgold px-5 py-2.5 rounded-full text-sm font-bold rotate-1">Responsive</span>
+        <span data-info="Lightweight assets & zero unnecessary frameworks" class="tag bg-zinc-100 text-black px-5 py-2.5 rounded-full text-sm font-bold -rotate-3">Fast Load</span>
+        <span data-info="Readable, indented & modular code structure" class="tag bg-batgold text-black px-5 py-2.5 rounded-full text-sm font-bold rotate-2">Clean Code</span>
+        <span data-info="Sharp spacing, typography & visual hierarchy" class="tag bg-armor border border-white/15 text-white px-5 py-2.5 rounded-full text-sm font-bold -rotate-1">Pixel-Perfect</span>
+        <span data-info="Proper meta tags, headings & fast Core Web Vitals" class="tag bg-zinc-100 text-black px-5 py-2.5 rounded-full text-sm font-bold -rotate-2">SEO-Ready</span>
+        <span data-info="Consistent rendering on Chrome, Safari, Edge & Firefox" class="tag bg-armor border border-batgold/40 text-batgold px-5 py-2.5 rounded-full text-sm font-bold rotate-3">Cross-Browser</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="reviews" class="bg-void px-6 py-24 border-b border-white/[0.06]">
+    <div class="max-w-5xl mx-auto reveal">
+      <div class="text-center mb-14">
+        <span class="font-mono text-xs uppercase tracking-widest text-batgold">Feedback</span>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">What clients say</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="tactical-card rounded-2xl p-6 text-center">
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div class="w-12 h-12 rounded-full bg-batgold text-black mx-auto flex items-center justify-center font-extrabold text-sm mb-4">RK</div>
+          <p class="text-sm text-zinc-300 italic leading-relaxed">"Ujjawal turned our rough idea into a sharp, fast landing page in days."</p>
+          <p class="text-sm font-bold text-white mt-4">Riya Kapoor</p>
+          <p class="text-xs font-mono text-zinc-500">Founder, Studio North</p>
+        </div>
+
+        <div class="tactical-card rounded-2xl p-6 text-center">
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div class="w-12 h-12 rounded-full bg-armor border border-batgold/50 text-batgold mx-auto flex items-center justify-center font-extrabold text-sm mb-4">AS</div>
+          <p class="text-sm text-zinc-300 italic leading-relaxed">"Clean code, responsive on every device, delivered on time."</p>
+          <p class="text-sm font-bold text-white mt-4">Arjun Sharma</p>
+          <p class="text-xs font-mono text-zinc-500">Owner, Ironclad Fitness</p>
+        </div>
+
+        <div class="tactical-card rounded-2xl p-6 text-center">
+          <div class="hud-corners"><span class="hud-tl"></span><span class="hud-tr"></span><span class="hud-bl"></span><span class="hud-br"></span></div>
+          <div class="w-12 h-12 rounded-full bg-zinc-200 text-black mx-auto flex items-center justify-center font-extrabold text-sm mb-4">MP</div>
+          <p class="text-sm text-zinc-300 italic leading-relaxed">"Great communication and an eye for detail on every section."</p>
+          <p class="text-sm font-bold text-white mt-4">Meera Patel</p>
+          <p class="text-xs font-mono text-zinc-500">Creator, Monochrome</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA + CONTACT + FOOTER -->
+  <section id="contact" class="bg-carbon text-white px-6 pt-24 pb-32 relative overflow-hidden stealth-grid">
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="grid lg:grid-cols-2 gap-10 items-center reveal">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-batgold">Initiate</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold leading-tight mt-2">
+            Start your next<br/>project <span class="underline decoration-batgold underline-offset-8">today</span>
+          </h2>
+        </div>
+        <div class="lg:text-right">
+          <p class="text-sm text-zinc-400 max-w-md lg:ml-auto">
+            Have a reference link, rough sketch, or landing page idea? Drop a message below and I'll get back to you quickly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Replace YOUR_ACCESS_KEY_HERE with your free key from web3forms.com -->
+      <form id="contactForm" action="https://api.web3forms.com/submit" method="POST" class="mt-12 bg-void/90 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-4 shadow-2xl reveal">
+        <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+        <div class="grid sm:grid-cols-2 gap-4">
+          <input name="name" required placeholder="Your name" class="bg-carbon border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-batgold transition" />
+          <input name="email" type="email" required placeholder="you@example.com" class="bg-carbon border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-batgold transition" />
+        </div>
+        <textarea id="contactMessage" name="message" rows="4" required placeholder="Tell me about your project..." class="w-full bg-carbon border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-batgold transition"></textarea>
+        <button type="submit" class="ripple-btn w-full bg-batgold hover:bg-batgoldHover text-black font-bold py-3.5 rounded-xl text-sm transition cursor-pointer shadow-lg shadow-batgold/15">
+          Send Message
+        </button>
+      </form>
+
+      <div class="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-batgold" viewBox="0 0 32 16" fill="currentColor">
+            <path d="M16 14L12.5 8.5L9 11L5.5 6.5L0 9.5C1.5 4.5 5.5 1.5 10.5 1.5L13 5L14.5 2L16 4L17.5 2L19 5L21.5 1.5C26.5 1.5 30.5 4.5 32 9.5L26.5 6.5L23 11L19.5 8.5L16 14Z"/>
+          </svg>
+          <span class="font-bold text-white">ujjawal.dev</span>
+        </div>
+        <p>&copy; 2026 Ujjawal &bull; Frontend Web Developer</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Project Inspection Modal -->
+  <div id="projectModal" class="modal-overlay fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="modal-card max-w-lg w-full rounded-2xl bg-carbon border border-white/15 p-6 sm:p-8 shadow-2xl relative">
+      <button id="closeModalBtn" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-zinc-300 flex items-center justify-center absolute top-5 right-5 transition cursor-pointer">
+        <i class="ri-close-line text-lg"></i>
+      </button>
+      <span id="modalTag" class="font-mono text-xs text-batgold uppercase tracking-wider"></span>
+      <h3 id="modalTitle" class="text-2xl font-bold text-white mt-1"></h3>
+      <p id="modalDesc" class="mt-4 text-sm text-zinc-300 leading-relaxed"></p>
+      <div class="mt-5 pt-4 border-t border-white/10">
+        <p class="text-[11px] font-mono text-zinc-500 uppercase">Tech Stack</p>
+        <p id="modalStack" class="text-xs font-mono text-zinc-200 mt-1"></p>
+      </div>
+      <button id="requestSimilarBtn" class="ripple-btn mt-6 w-full py-3 rounded-xl bg-batgold hover:bg-batgoldHover text-black text-sm font-bold transition cursor-pointer">
+        Request Similar Layout
+      </button>
+    </div>
+  </div>
+
+  <!-- Vanilla JS Micro-Interactions & Silky Smooth Scroll Engine -->
+  <script>
+    // 1. Custom Silky Smooth Scroll (Works on every browser & OS)
+    function smoothScrollTo(targetSelector, duration = 900) {
+      const target = targetSelector === '#' ? document.body : document.querySelector(targetSelector);
+      if (!target) return;
+
+      const startY = window.scrollY;
+      const targetY = targetSelector === '#' ? 0 : target.getBoundingClientRect().top + startY;
+      const distance = targetY - startY;
+      let startTime = null;
+
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function step(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+
+        if (elapsed < duration) {
+          requestAnimationFrame(step);
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          smoothScrollTo(href, 900);
+        }
+      });
+    });
+
+    // 2. Scroll Reveal Observer
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // 3. Hero Bat-Signal Cursor Follow
+    const hero = document.getElementById('hero');
+    const heroSpotlight = document.getElementById('heroSpotlight');
+    hero.addEventListener('mousemove', e => {
+      const rect = hero.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      heroSpotlight.style.background = `radial-gradient(600px circle at ${x}px ${y}px, rgba(234, 179, 8, 0.09), transparent 60%)`;
+    });
+
+    // 4. Tactical Card Cursor Spotlight
+    document.querySelectorAll('.tactical-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    // 5. 3D Tilt on Stealth Emblem Card
+    const emblemCard = document.getElementById('emblemCard');
+    emblemCard.addEventListener('mousemove', e => {
+      const rect = emblemCard.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      emblemCard.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 16}deg)`;
+    });
+    emblemCard.addEventListener('mouseleave', () => {
+      emblemCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+
+    // 6. Tactile Click Ripple on Buttons
+    document.querySelectorAll('.ripple-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const wave = document.createElement('span');
+        const diameter = Math.max(this.clientWidth, this.clientHeight);
+        const rect = this.getBoundingClientRect();
+        wave.style.width = wave.style.height = `${diameter}px`;
+        wave.style.left = `${e.clientX - rect.left - diameter / 2}px`;
+        wave.style.top = `${e.clientY - rect.top - diameter / 2}px`;
+        wave.classList.add('ripple-wave');
+        const old = this.querySelector('.ripple-wave');
+        if (old) old.remove();
+        this.appendChild(wave);
+      });
+    });
+
+    // 7. Interactive Build Process Tabs
+    const previewBadge = document.getElementById('previewBadge');
+    const processPreview = document.getElementById('processPreview');
+    const processSteps = document.querySelectorAll('.process-step');
+
+    const previewTemplates = [
+      {
+        badge: '01 / LAYOUT ENGINE',
+        html: `
+          <div class="h-3 w-2/3 bg-white/15 rounded-full mb-3"></div>
+          <div class="h-3 w-1/2 bg-batgold rounded-full mb-5"></div>
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+              <span class="w-4 h-1 bg-batgold rounded"></span>
+              <span class="text-[10px] font-mono text-zinc-400">Grid</span>
+            </div>
+            <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+              <span class="w-4 h-1 bg-zinc-400 rounded"></span>
+              <span class="text-[10px] font-mono text-zinc-400">Flex</span>
+            </div>
+            <div class="h-16 bg-armor border border-white/[0.06] rounded-xl p-2.5 flex flex-col justify-between">
+              <span class="w-4 h-1 bg-batgold rounded"></span>
+              <span class="text-[10px] font-mono text-zinc-400">Mobile</span>
+            </div>
+          </div>`
+      },
+      {
+        badge: '02 / CLEAN ARCHITECTURE',
+        html: `
+          <div class="p-3.5 rounded-xl bg-void border border-white/[0.07] font-mono text-xs space-y-1.5 text-zinc-400">
+            <p><span class="text-batgold">&lt;section</span> class="hero-grid"<span class="text-batgold">&gt;</span></p>
+            <p class="pl-4 text-zinc-200">&lt;h1&gt;Semantic &amp; Fast&lt;/h1&gt;</p>
+            <p class="pl-4 text-zinc-500">// Zero redundant wrappers</p>
+            <p><span class="text-batgold">&lt;/section&gt;</span></p>
+          </div>`
+      },
+      {
+        badge: '03 / 60FPS MOTION',
+        html: `
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1"><span>Performance Score</span><span class="text-batgold">99/100</span></div>
+              <div class="w-full h-2 bg-void rounded-full overflow-hidden"><div class="h-full bg-batgold w-[99%] rounded-full"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1"><span>GPU Transition Frame</span><span class="text-white">16.6ms</span></div>
+              <div class="w-full h-2 bg-void rounded-full overflow-hidden"><div class="h-full bg-zinc-300 w-[94%] rounded-full"></div></div>
+            </div>
+          </div>`
+      }
+    ];
+
+    processSteps.forEach((step, idx) => {
+      step.addEventListener('click', () => {
+        processSteps.forEach(s => {
+          s.classList.remove('border-batgold/50', 'bg-carbon');
+          s.classList.add('border-white/[0.06]', 'bg-carbon/40', 'opacity-60');
+        });
+        step.classList.remove('border-white/[0.06]', 'bg-carbon/40', 'opacity-60');
+        step.classList.add('border-batgold/50', 'bg-carbon');
+
+        previewBadge.textContent = previewTemplates[idx].badge;
+        processPreview.style.opacity = '0';
+        setTimeout(() => {
+          processPreview.innerHTML = previewTemplates[idx].html;
+          processPreview.style.opacity = '1';
+        }, 160);
+      });
+    });
+
+    // 8. Interactive Skill Tag Click Readout
+    const skillReadout = document.getElementById('skillReadout');
+    document.querySelectorAll('.tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        skillReadout.innerHTML = `<span class="text-batgold font-semibold">${tag.textContent}:</span> ${tag.dataset.info}`;
+      });
+    });
+
+    // 9. Animated Stat Counters on Scroll
+    let statsAnimated = false;
+    const statsObserver = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !statsAnimated) {
+        statsAnimated = true;
+        document.querySelectorAll('.stat-num').forEach(el => {
+          const target = +el.dataset.target;
+          const suffix = el.dataset.suffix || '';
+          let current = 0;
+          const step = Math.max(1, Math.ceil(target / 30));
+          const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              el.textContent = target + suffix;
+              clearInterval(timer);
+            } else {
+              el.textContent = current + suffix;
+            }
+          }, 30);
+        });
+      }
+    }, { threshold: 0.4 });
+    statsObserver.observe(document.getElementById('statsGrid'));
+
+    // 10. Bottom Floating Nav Active Pill Highlight
+    const sections = ['about', 'work', 'skills', 'reviews', 'contact'];
+    const navItems = document.querySelectorAll('.nav-item');
+    window.addEventListener('scroll', () => {
+      let currentSec = '';
+      sections.forEach(id => {
+        const sec = document.getElementById(id);
+        if (sec && window.scrollY >= sec.offsetTop - 280) {
+          currentSec = id;
+        }
+      });
+      navItems.forEach(item => {
+        if (item.dataset.nav === currentSec) {
+          item.classList.add('text-batgold', 'font-bold');
+        } else {
+          item.classList.remove('text-batgold', 'font-bold');
+        }
+      });
+    });
+
+    // 11. Project Inspection Modal
+    const modal = document.getElementById('projectModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalTag = document.getElementById('modalTag');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalStack = document.getElementById('modalStack');
+    const contactMessage = document.getElementById('contactMessage');
+    let selectedTitle = '';
+
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', () => {
+        selectedTitle = card.dataset.title;
+        modalTitle.textContent = selectedTitle;
+        modalTag.textContent = card.dataset.tag;
+        modalDesc.textContent = card.dataset.desc;
+        modalStack.textContent = card.dataset.stack;
+        modal.classList.add('open');
+      });
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+
+    document.getElementById('requestSimilarBtn').addEventListener('click', () => {
+      modal.classList.remove('open');
+      contactMessage.value = `Hi Ujjawal, I liked the "${selectedTitle}" layout and want something similar for my website.`;
+      smoothScrollTo('#contact', 950);
+      setTimeout(() => contactMessage.focus(), 980);
+    });
+  </script>
+</body>
+</html>
